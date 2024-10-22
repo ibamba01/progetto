@@ -12,4 +12,4 @@ if __name__ == '__main__':
     print(t.inorder())
     t.search(12)
     t.min()
-    t.delete(15)
+

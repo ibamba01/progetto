@@ -1,16 +1,14 @@
 class Abr:
     # costruttore
-    def __init__(self, key=None):
+    def __init__(self, key=None, parent=None):
         # imposto il valore del nodo o crea un nodo vuoto
         self.key = key
-        self.parent = None
+        self.parent = parent
         # se non è vuoto imposto i figli come nodi vuoti
         if self.key:
             print("l'albero è stato creato con successo e {} è la sua radice".format(self.key))
-            self.left = Abr()
-            self.right = Abr()
-            self.left.parent = self
-            self.right.parent = self
+            self.left = Abr(parent=self)
+            self.right = Abr(parent=self)
         # se è vuoto non ha figli
         else:
             self.left = None
@@ -22,17 +20,24 @@ class Abr:
     def notempty(self):
         return self.key is not None
 
+    def get_parent(self):
+        if self.parent:
+            print("Il nodo padre di {} è {}".format(self.key, self.parent.key))
+        else:
+            print("Questo nodo non ha un padre (è la radice)")
+
+
     # inserisci valore
     def insert(self, value):
         # controllo se è il nodo root o se il nodo attuale è vuoto
         if self.isempty():
             self.key = value
             # imposto i figli come nodi vuoti
-            self.right = Abr()
-            self.left = Abr()
+            self.right = Abr(parent=self)
+            self.left = Abr(parent=self)
             print("il valore: {} è stato inserito con successo".format(self.key))
         else:
-            parent = self
+            padre = self
             # controllo se il valore da inserire è < del nodo attuale
             if value < self.key:
                 # è piu piccolo, inserisco a sinistra
