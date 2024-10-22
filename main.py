@@ -17,3 +17,5 @@ if __name__ == '__main__':
     t.min()
     print(t.inorder())
     t.get_kesimo(3)
+    t.size()
+    print(t.height())

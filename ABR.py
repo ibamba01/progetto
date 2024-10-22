@@ -84,17 +84,19 @@ class Abr:
             return self.right.search(value)
 
     def minprint(self):
+        current = self
         # controllo se il nodo a sinistra è vuoto
-        while not self.left.isempty():
-            self = self.left
-        print("il valore minimo è: {}".format(self.key))
+        while not current.left.isempty():
+            current = current.left
+        print("il valore minimo è: {}".format(current.key))
 
 
     def max(self):
+        current = self
         # controllo se il nodo a destra è vuoto
-        while not self.right.isempty():
-            self = self.right
-        print("il valore massimo è: {}".format(self.key))
+        while not current.right.isempty():
+            current = current.right
+        print("il valore massimo è: {}".format(current.key))
 
     def min(self):
         current = self
@@ -178,3 +180,28 @@ class Abr:
                 break
 
         return None
+
+    # calcola la deimensione dell'albero
+    def size(root):
+        size = 0
+        stack = []
+        current = root
+
+        while True:
+            if current.left is not None:
+                stack.append(current)
+                current = current.left
+            elif stack:
+                current = stack.pop()
+                size += 1
+                current = current.right
+            else:
+                break
+        print("la dimensione dell'albero è: {}".format(size))
+        return size
+
+    def height(self):
+        if (self.key is None):
+            return 0
+        else:
+            return 1 + max(self.left.height(), self.right.height())
