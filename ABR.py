@@ -158,6 +158,7 @@ class Abr:
             y.left = z.left
             y.left.parent = y
         print("il valore: {} è stato eliminato con successo".format(value))
+        return True
 
     def get_kesimo(root, k):
         stack = []
