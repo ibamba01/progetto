@@ -18,16 +18,17 @@ if __name__ == '__main__':
     #t.search(12)
     #t.min()
     #print(t.inorder())
-    #t.get_kesimo(3)
+    #t.kesimo(3)
     #t.size()
     #print(t.height())
    # t.delete(15)
     #print(t.inorder())
     a = Arn(20)
     i = 0
-    while i < 72:
+    while i < 70:
         a.insert(int(random() * 100))
         i += 1
 
     print(a.root.key)
     a.root.print_by_level()
+    print(a.root.size)

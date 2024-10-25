@@ -47,7 +47,6 @@ class Abr:
             self.left = Abr(parent=self)
             print("il valore: {} è stato inserito con successo".format(self.key))
         else:
-            padre = self
             # controllo se il valore da inserire è < del nodo attuale
             if value < self.key:
                 # è piu piccolo, inserisco a sinistra
@@ -160,7 +159,7 @@ class Abr:
         print("il valore: {} è stato eliminato con successo".format(value))
         return True
 
-    def get_kesimo(root, k):
+    def kesimo(root, k):
         stack = []
         current = root
         count = 0
@@ -179,8 +178,6 @@ class Abr:
                 current = current.right
             else:
                 break
-
-        return None
 
     # calcola la deimensione dell'albero
     def size(root):

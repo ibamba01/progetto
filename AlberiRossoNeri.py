@@ -62,9 +62,15 @@ class Arn:
         # imposto x come figlio sinistro di y concludendo lo switch
         y.left = self
         self.parent = y
-        # aggiorno la dimensione
+        y.size = self.size
+        self.size = 1
+        if self.right is not None:
+            self.size += self.right.size
+        if self.left is not None:
+            self.size += self.left.size
 
-        return y
+
+        # aggiorno la dimensione
 
     def rightrotate(self):
         y = self.left
@@ -80,13 +86,16 @@ class Arn:
             self.parent.left = y
         y.right = self
         self.parent = y
-
-        return y
+        self.size = 1
+        if self.right is not None:
+            self.size += self.right.size
+        if self.left is not None:
+            self.size += self.left.size
 
     def insert(self,value):
         current = self.root
         previus = None
-        while current is not None and current.notempty():
+        while current and current.notempty():
             previus = current
             if value < current.key:
                 current = current.left
@@ -99,8 +108,8 @@ class Arn:
             previus.left = nuovo
         else:
             previus.right = nuovo
-        nuovo.left = Arn(root=self, parent=nuovo)
-        nuovo.right = Arn(root=self, parent=nuovo)
+        nuovo.left = Arn(parent=nuovo)
+        nuovo.right = Arn(parent=nuovo)
         nuovo.color = "red"
         self.insertfixup(nuovo)
 
@@ -188,7 +197,7 @@ class Arn:
             if node.isempty():
                 print("None", end=" ")  # Stampa None se il nodo è vuoto
             else:
-                if (node.parent is None):
+                if node.parent is None:
                     print(f"{node.key}({node.color}) (Root)", end=" ")
                 else:
                     print(f"{node.key}({node.color},{node.parent.key})", end=" ")
@@ -198,3 +207,39 @@ class Arn:
                 queue.append((node.left, level + 1))
             if node.right is not None:
                 queue.append((node.right, level + 1))
+
+    def kesimo(root, k):
+        stack = []
+        current = root
+        count = 0
+        while True:
+            # scendo a sinistra fino a trovare un nodo vuoto e metto i nodi visitati nello stack
+            if current.left is not None:
+                stack.append(current)
+                current = current.left
+            # prendo il nodo in cima allo stack e lo visito
+            elif stack:
+                current = stack.pop()
+                count += 1
+                if count == k:
+                    print("il {}° nodo è: {}".format(k, current.key))
+                    return current.key
+                current = current.right
+            else:
+                break
+
+        def search(self, value):
+            # controllo se il nodo è vuoto
+            if self.isempty():
+                print("{} non è presente nell'albero".format(value))
+                return False
+            # controllo se il valore è uguale al nodo attuale
+            if self.key == value:
+                print("{} è stato trovato".format(value))
+                return True
+            # controllo se il valore è minore del nodo attuale
+            elif value < self.key:
+                return self.left.search(value)
+            # controllo se il valore è maggiore del nodo attuale
+            else:
+                return self.right.search(value)
