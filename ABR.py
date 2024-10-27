@@ -159,9 +159,9 @@ class Abr:
         print("il valore: {} è stato eliminato con successo".format(value))
         return True
 
-    def kesimo(root, k):
+    def kesimo(self, k):
         stack = []
-        current = root
+        current = self.root
         count = 0
         while True:
             # scendo a sinistra fino a trovare un nodo vuoto e metto i nodi visitati nello stack

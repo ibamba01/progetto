@@ -95,6 +95,7 @@ class Arn:
     def insert(self,value):
         current = self.root
         previus = None
+
         while current and current.notempty():
             previus = current
             if value < current.key:
@@ -236,7 +237,7 @@ class Arn:
             # controllo se il valore è uguale al nodo attuale
             if self.key == value:
                 print("{} è stato trovato".format(value))
-                return True
+                return self
             # controllo se il valore è minore del nodo attuale
             elif value < self.key:
                 return self.left.search(value)

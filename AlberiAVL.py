@@ -1,13 +1,12 @@
 class Avl:
-    def __init__(self, key=None, heightcluster=1, parent=None,root=None):
+    def __init__(self, key=None, heightcluster=0, parent=None):
         self.key = key
         self.parent = parent
         self.height = heightcluster
-        if root is None:  # serve a gestire il caso y = Arn(root=self), altrimenti y = Arn() imposterebbe sestesso come la radice
-            if not parent:  # se non ha un padre e non è stata impostata una radice è la radice
-                self.root = self
-            else:  # altrimenti la radice è la radice del padre
-                self.root = parent.root
+        if not parent:  # se non ha un padre e non è stata impostata una radice è la radice
+            self.root = self
+        else:  # altrimenti la radice è la radice del padre
+            self.root = parent.root
         # imposta un nodo vuoto che ha la radice impostata
         self.left = None
         self.right = None
@@ -93,7 +92,8 @@ class Avl:
     def insert(self,value):
         current = self.root
         prev = None
-        while current is not None:
+        # se l'albero è stato creato vuoto, se lo mettessi dopo il while crerebbe un problema perche current.key sarebbe None che non viene confrontato con value
+        while current and current.notempty():
             prev = current
             if value < current.key:
                 current = current.left
@@ -136,4 +136,47 @@ class Avl:
                 x = x.parent
             x = x.parent
 
+    def inorder(self):
+        # controllo se il nodo è vuoto
+        if self.isempty():
+            return []  # termino e restituisco
+        # esploro a sinistra fino a che non trovo un nodo vuoto
+        else:
+            left_inorder = self.left.inorder() if self.left is not None else []
+            right_inorder = self.right.inorder() if self.right is not None else []
+            return left_inorder + [self.key] + right_inorder
 
+    def search(self, value):
+        current = self.root
+        while current is not None and current.key != value:
+            if value < current.key:
+                current = current.left
+            else:
+                current = current.right
+        return current
+
+    def min(self):
+        current = self.root
+        while current.left is not None:
+            current = current.left
+        return current.key
+
+    def kesimo(self, k):
+        stack = []
+        current = self.root
+        count = 0
+        while True:
+            # scendo a sinistra fino a trovare un nodo vuoto e metto i nodi visitati nello stack
+            if current.left is not None:
+                stack.append(current)
+                current = current.left
+            # prendo il nodo in cima allo stack e lo visito
+            elif stack:
+                current = stack.pop()
+                count += 1
+                if count == k:
+                    print("il {}° nodo è: {}".format(k, current.key))
+                    return current.key
+                current = current.right
+            else:
+                break
