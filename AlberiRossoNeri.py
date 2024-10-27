@@ -156,25 +156,6 @@ class Arn:
             right_inorder = self.right.inorder() if self.right is not None else []
             return left_inorder + [self.key, self.color] + right_inorder
 
-    def printtree(self):
-        if self.isempty():
-            return
-        print(self.key, self.color)
-        if self.left is not None:
-            self.left.printtree()
-        print(" ")
-        if self.right is not None:
-            self.right.printtree()
-
-    def print_tree(self, level=0, prefix="Root: "):
-        if self.notempty():
-            print(" " * (level * 4) + prefix + str(self.key) + " (" + self.color + ")")
-            if self.left is not None:
-                self.left.print_tree(level + 1, "L----- ")
-            if self.right is not None:
-                self.right.print_tree(level + 1, "R----- ")
-
-
 
     def print_by_level(self):
         if self.isempty():
@@ -209,9 +190,9 @@ class Arn:
             if node.right is not None:
                 queue.append((node.right, level + 1))
 
-    def kesimo(root, k):
+    def kesimo(self, k):
         stack = []
-        current = root
+        current = self.root
         count = 0
         while True:
             # scendo a sinistra fino a trovare un nodo vuoto e metto i nodi visitati nello stack
@@ -223,24 +204,24 @@ class Arn:
                 current = stack.pop()
                 count += 1
                 if count == k:
-                    print("il {}° nodo è: {}".format(k, current.key))
+                    #print("il {}° nodo è: {}".format(k, current.key))
                     return current.key
                 current = current.right
             else:
                 break
 
-        def search(self, value):
-            # controllo se il nodo è vuoto
-            if self.isempty():
-                print("{} non è presente nell'albero".format(value))
-                return False
-            # controllo se il valore è uguale al nodo attuale
-            if self.key == value:
-                print("{} è stato trovato".format(value))
-                return self
-            # controllo se il valore è minore del nodo attuale
-            elif value < self.key:
-                return self.left.search(value)
-            # controllo se il valore è maggiore del nodo attuale
-            else:
-                return self.right.search(value)
+    def search(self, value):
+        # controllo se il nodo è vuoto
+        if self.isempty():
+            print("{} non è presente nell'albero".format(value))
+            return False
+        # controllo se il valore è uguale al nodo attuale
+        if self.key == value:
+            print("{} è stato trovato".format(value))
+            return self
+        # controllo se il valore è minore del nodo attuale
+        elif value < self.key:
+            return self.left.search(value)
+        # controllo se il valore è maggiore del nodo attuale
+        else:
+            return self.right.search(value)

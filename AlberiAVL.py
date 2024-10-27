@@ -167,7 +167,7 @@ class Avl:
         count = 0
         while True:
             # scendo a sinistra fino a trovare un nodo vuoto e metto i nodi visitati nello stack
-            if current.left is not None:
+            if current and current.left is not None:
                 stack.append(current)
                 current = current.left
             # prendo il nodo in cima allo stack e lo visito
@@ -175,7 +175,7 @@ class Avl:
                 current = stack.pop()
                 count += 1
                 if count == k:
-                    print("il {}° nodo è: {}".format(k, current.key))
+                    #print("il {}° nodo è: {}".format(k, current.key))
                     return current.key
                 current = current.right
             else:

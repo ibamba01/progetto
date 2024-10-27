@@ -11,7 +11,7 @@ class Abr:
             self.root = parent.root
         # se non è vuoto imposto i figli come nodi vuoti
         if self.key:
-            print("l'albero è stato creato con successo e {} è la sua radice".format(self.key))
+            # print("l'albero è stato creato con successo e {} è la sua radice".format(self.key))
             self.left = Abr(parent=self)
             self.right = Abr(parent=self)
         # se è vuoto non ha figli
@@ -45,7 +45,7 @@ class Abr:
             # imposto i figli come nodi vuoti
             self.right = Abr(parent=self)
             self.left = Abr(parent=self)
-            print("il valore: {} è stato inserito con successo".format(self.key))
+            # print("il valore: {} è stato inserito con successo".format(self.key))
         else:
             # controllo se il valore da inserire è < del nodo attuale
             if value < self.key:
@@ -69,11 +69,11 @@ class Abr:
     def search(self, value):
         # controllo se il nodo è vuoto
         if self.isempty():
-            print("{} non è presente nell'albero".format(value))
+            # print("{} non è presente nell'albero".format(value))
             return False
         # controllo se il valore è uguale al nodo attuale
         if self.key == value:
-            print("{} è stato trovato".format(value))
+            # print("{} è stato trovato".format(value))
             return True
         # controllo se il valore è minore del nodo attuale
         elif value < self.key:
@@ -128,37 +128,6 @@ class Abr:
         if  v.notempty():
             v.parent = u.parent
 
-    def delete(self, value):
-        current = self
-        #trovo il nodo da eliminare
-        while current.key != value:
-            if current.isempty():  # il nodo non è presente
-                print("il valore: {} non è presente nell'albero".format(value))
-                return
-            if value < current.key: # il valore è minore del nodo attuale cerco a sinistra
-                current = current.left
-            else:
-                current = current.right # il valore è maggiore del nodo attuale cerco a destra
-        z = current
-        # Caso 1: il nodo da eliminare non ha figli o ha solo il figlio destro
-        if z.left.isempty():
-            self.trasplant(z, z.right)
-        # Caso 2: il nodo da eliminare ha solo il figlio sinistro
-        elif z.right.isempty():
-             self.trasplant(z, z.left)
-        # Caso 3: il nodo da eliminare ha entrambi i figli
-        else:
-            y = z.right.minroot()
-            if y.parent != z:
-                self.trasplant(y,y.right)
-                y.right = z.right
-                y.right.parent = y
-            self.trasplant(z,y)
-            y.left = z.left
-            y.left.parent = y
-        print("il valore: {} è stato eliminato con successo".format(value))
-        return True
-
     def kesimo(self, k):
         stack = []
         current = self.root
@@ -173,7 +142,7 @@ class Abr:
                 current = stack.pop()
                 count += 1
                 if count == k:
-                    print("il {}° nodo è: {}".format(k, current.key))
+                    # print("il {}° nodo è: {}".format(k, current.key))
                     return current.key
                 current = current.right
             else:
@@ -195,7 +164,7 @@ class Abr:
                 current = current.right
             else:
                 break
-        print("la dimensione dell'albero è: {}".format(size))
+        # print("la dimensione dell'albero è: {}".format(size))
         return size
 
     def height(self):
