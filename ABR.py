@@ -13,6 +13,7 @@ class Abr:
         self.left = None
         self.right = None
 
+    # check
     def isempty(self):
         return self.key is None
 
@@ -25,7 +26,8 @@ class Abr:
     def notempty(self):
         return self.key is not None
 
-    def get_parent(self):
+    # printparent
+    def printparent(self):
         if self.parent:
             print("Il nodo padre di {} è {}".format(self.key, self.parent.key))
         else:
@@ -49,9 +51,7 @@ class Abr:
                 # è più grande o uguale, inserisco a destra
                 self.right.insert(value)
 
-    # controllo se è vuoto
     # Attraversamento dell'albero
-
     def inorder(self):
         # controllo se il nodo è vuoto
         if self.isempty():
@@ -60,23 +60,25 @@ class Abr:
         else:
             return self.left.inorder() + [self.key] + self.right.inorder()
 
-
+    # ricerca
     def search(self, value):
+        current = self.root
         # controllo se il nodo è vuoto
-        if self.isempty():
+        if current.isempty():
             # print("{} non è presente nell'albero".format(value))
             return False
         # controllo se il valore è uguale al nodo attuale
-        if self.key == value:
+        if current.key == value:
             # print("{} è stato trovato".format(value))
             return True
         # controllo se il valore è minore del nodo attuale
-        elif value < self.key:
-            return self.left.search(value)
+        elif value < current.key:
+            return current.left.search(value)
         # controllo se il valore è maggiore del nodo attuale
         else:
-            return self.right.search(value)
+            return current.right.search(value)
 
+    # print del minimo
     def minprint(self):
         current = self
         # controllo se il nodo a sinistra è vuoto
@@ -84,27 +86,31 @@ class Abr:
             current = current.left
         print("il valore minimo è: {}".format(current.key))
 
-
-    def max(self):
+    # il massimo del sottoalbero
+    def maxprint(self):
         current = self
         # controllo se il nodo a destra è vuoto
         while not current.right.isempty():
             current = current.right
         print("il valore massimo è: {}".format(current.key))
 
+    # il minimo del sottoalbero
     def min(self):
         current = self
         # controllo se il nodo a sinistra è vuoto
         while not current.left.isempty():
             current = current.left
         return current
-    def minroot(root):
-        x = root
+
+    # il minimo dell'albero
+    def minroot(self):
+        x = self.root
         # controllo se il nodo a sinistra è vuoto
         while not x.left.isempty():
             x = x.left
         return x
 
+    # successor
     def successor(self):
         if self.right.isempty():
             return None
@@ -113,6 +119,7 @@ class Abr:
             next = next.left
         return next
 
+    # trasplant
     def trasplant(self, u, v):
         if u.parent is None:
             self.root = v
@@ -123,6 +130,7 @@ class Abr:
         if  v.notempty():
             v.parent = u.parent
 
+    # ritorna il k-esimo elemento più piccolo
     def kesimo(self, k):
         stack = []
         current = self.root
@@ -144,10 +152,10 @@ class Abr:
                 break
 
     # calcola la deimensione dell'albero
-    def size(root):
+    def size(self):
         size = 0
         stack = []
-        current = root
+        current = self.root
 
         while True:
             if current.left is not None:
@@ -162,6 +170,7 @@ class Abr:
         # print("la dimensione dell'albero è: {}".format(size))
         return size
 
+    # indica l'altezza del sottoalbero
     def height(self):
         if (self.key is None):
             return 0
