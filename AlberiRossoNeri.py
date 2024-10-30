@@ -3,26 +3,19 @@ class Color:
     Black = "black"
     Red = "red"
 class Arn:
-    def __init__(self, key=None, sizecluster=1, parent=None,root=None):
+    def __init__(self, key=None, parent=None):
         self.key = key
         self.parent = parent
-        self.size = sizecluster
-        if root is None: # serve a gestire il caso y = Arn(root=self), altrimenti y = Arn() imposterebbe sestesso come la radice
-            if not parent:  # se non ha un padre e non è stata impostata una radice è la radice
-                self.root = self
-            else:  # altrimenti la radice è la radice del padre
-                self.root = parent.root
+        self.size = 1
+        if not parent:  # se non ha un padre
+            self.root = self
+        else:  # altrimenti la radice è la radice del padre
+            self.root = parent.root
         # imposta un nodo vuoto che ha la radice impostata
         self.left = None
         self.right = None
-        if self.isroot():
-            self.color = Color.Black
         if self.isempty():
             self.color = Color.Black
-        #elif self.parent.isred():
-        #   self.color = "black"
-        #if self.isleaf():
-        #    self.color = "black"
 
     def isempty(self):
         return self.key is None

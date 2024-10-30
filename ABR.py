@@ -10,14 +10,8 @@ class Abr:
         else: # altrimenti la radice è la radice del padre
             self.root = parent.root
         # se non è vuoto imposto i figli come nodi vuoti
-        if self.key:
-            # print("l'albero è stato creato con successo e {} è la sua radice".format(self.key))
-            self.left = Abr(parent=self)
-            self.right = Abr(parent=self)
-        # se è vuoto non ha figli
-        else:
-            self.left = None
-            self.right = None
+        self.left = None
+        self.right = None
 
     def isempty(self):
         return self.key is None
@@ -54,6 +48,7 @@ class Abr:
             else:
                 # è più grande o uguale, inserisco a destra
                 self.right.insert(value)
+
     # controllo se è vuoto
     # Attraversamento dell'albero
 

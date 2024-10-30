@@ -1,8 +1,8 @@
 class Avl:
-    def __init__(self, key=None, heightcluster=0, parent=None):
+    def __init__(self, key=None, parent=None):
         self.key = key
         self.parent = parent
-        self.height = heightcluster
+        self.height = 1
         if not parent:  # se non ha un padre e non è stata impostata una radice è la radice
             self.root = self
         else:  # altrimenti la radice è la radice del padre
@@ -92,7 +92,6 @@ class Avl:
     def insert(self,value):
         current = self.root
         prev = None
-        # se l'albero è stato creato vuoto, se lo mettessi dopo il while crerebbe un problema perche current.key sarebbe None che non viene confrontato con value
         while current and current.notempty():
             prev = current
             if value < current.key:
@@ -106,8 +105,8 @@ class Avl:
             prev.left = newnode
         else:
             prev.right = newnode
-        newnode.left = None
-        newnode.right = None
+        newnode.left = Avl(parent=newnode)
+        newnode.right = Avl(parent=newnode)
         newnode.height = 1
         self.insertfixup(newnode)
 

@@ -9,9 +9,9 @@ from ABR import Abr
 from AlberiRossoNeri import Arn
 from AlberiAVL import Avl
 
-n = 5006 # 5006
-step = 50 #
-test_per_iteration = 5 # 30
+n = 2505
+step = 50
+test_iteration = 5
 
 # funzione per creare un array random
 def random_array(num):
@@ -38,24 +38,26 @@ def test_insert_mesure(insert_fun, array):
 # test per la misurazione dei tempi di ricerca del k-esimo elemento più piccolo
 def test_os_mesure(os_function, length):
     k = length // 2  # in questo modo k è un elemento non troppo piccolo e non troppo grande
-    t = timeit.timeit(stmt=lambda: os_function(k), number=test_per_iteration)
-    return (t / test_per_iteration) * 1000  # tempo in ms
+    t = timeit.timeit(stmt=lambda: os_function(k), number=test_iteration)
+    return (t / test_iteration) * 1000  # tempo in ms
 
 
-# test per la misurazione dei tempi di ricerca del rank di un elemento
-def test_rank_mesure(rank_function, ric):
-    return timeit.timeit(stmt=lambda: rank_function(ric),
-                            number=test_per_iteration) / test_per_iteration * 1000  # tempo in ms)
+def test(num, stepp):
+    abr_insert = []
+    abr_kesimo = []
+    arn_insert = []
 
-def test(abr_insert,abr_kesimo,arn_insert,arn_kesimo,avl_insert,avl_kesimo, num, stepp):
-    # creo le strutture dati
+    arn_kesimo = []
+    avl_insert = []
+    avl_kesimo = []
+    # inizializzo gli alberi
     abr = Abr()
     arn = Arn()
     avl = Avl()
 
     # test
     for i in range(5, num, stepp):
-
+        # i è il numero di elementi presenti nell'array
         arr = random_array(i)
 
         # test per la misurazione dei tempi di inserimento
@@ -68,10 +70,6 @@ def test(abr_insert,abr_kesimo,arn_insert,arn_kesimo,avl_insert,avl_kesimo, num,
         arn_kesimo.append(test_os_mesure(arn.kesimo, i)) # risolto
         avl_kesimo.append(test_os_mesure(avl.kesimo, i)) # risolto
 
-    abr = Abr()
-    arn = Arn()
-    avl = Avl()
-
     return abr_insert, abr_kesimo, arn_insert, arn_kesimo, avl_insert, avl_kesimo
 
 # Funzione per svuotare una cartella
@@ -83,37 +81,29 @@ def svuota_cartella(cartella):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    # test
-    result = []
+    print("Set up")
+    # set up dei grafici
+    arrx = [] # indica la lunghezza dell'array, sarà la lunghezza delle ascisse e orsinate
 
-    # Serve per i grafici
     for i in range(5, n, step):
-        result.append(i)
+        arrx.append(i)
+    # inizializzo gli array dei risultati a tipi float
+    abr_insert_times = [0.0] * len(arrx)
+    arn_insert_times = [0.0] * len(arrx)
+    avl_insert_times = [0.0] * len(arrx)
+    abr_order_statistic_times = [0.0] * len(arrx)
+    arn_order_statistic_times = [0.0] * len(arrx)
+    avl_order_statistic_times = [0.0] * len(arrx)
 
-    abr_insert_times = [0.0] * len(result)
-    arn_insert_times = [0.0] * len(result)
-    avl_insert_times = [0.0] * len(result)
-    abr_order_statistic_times = [0.0] * len(result)
-    arn_order_statistic_times = [0.0] * len(result)
-    avl_order_statistic_times = [0.0] * len(result)
+    print("Inizio i test")
 
-    print("Parto con l'esecuzione dei test")
+    for j in range(test_iteration):
+        print("Test numero: ", (j+1), " di ", test_iteration)
 
-    for j in range(test_per_iteration):
-        print("Test numero: ", (j+1), " di ", test_per_iteration)
-        abr_temp_insert = []
-        arn_temp_insert = []
-        avl_temp_insert = []
+        abr_temp_insert, abr_temp_os, arn_temp_insert, arn_temp_os, avl_temp_insert, avl_temp_os = test(n, step)
 
-        abr_temp_os = []
-        arn_temp_os = []
-        avl_temp_os = []
-
-        abr_temp_insert, abr_temp_os, arn_temp_insert, arn_temp_os, avl_temp_insert, avl_temp_os = test(abr_temp_insert, abr_temp_os, arn_temp_insert,
-                                                                                                        arn_temp_os, avl_temp_insert, avl_temp_os, n, step)
-
-        for k in range(len(abr_temp_insert)):
-            print("Iterazione numero: ", (k+1), " di ", len(abr_temp_insert))
+        for k in range(len(arrx)):
+            print("riempio gli array ","[",(k+1), " di ", len(abr_temp_insert),"]")
             # Inserimento
             abr_insert_times[k] += abr_temp_insert[k]
             arn_insert_times[k] += arn_temp_insert[k]
@@ -123,35 +113,32 @@ if __name__ == '__main__':
             abr_order_statistic_times[k] += abr_temp_os[k]
             arn_order_statistic_times[k] += arn_temp_os[k]
             avl_order_statistic_times[k] += avl_temp_os[k]
-            # Rango
 
     print("faccio la media")
     # Calcolo la media
-    for s in range(0, len(result)):
+    for s in range(0, len(arrx)):
         # Inserimento
-        abr_insert_times[s] /=  test_per_iteration
-        arn_insert_times[s] /=  test_per_iteration
-        avl_insert_times[s] /=  test_per_iteration
+        abr_insert_times[s] /=  test_iteration
+        arn_insert_times[s] /=  test_iteration
+        avl_insert_times[s] /=  test_iteration
 
         # Statistica d'ordine
-        abr_order_statistic_times[s] /=  test_per_iteration
-        arn_order_statistic_times[s] /=  test_per_iteration
-        avl_order_statistic_times[s] /=  test_per_iteration
+        abr_order_statistic_times[s] /=  test_iteration
+        arn_order_statistic_times[s] /=  test_iteration
+        avl_order_statistic_times[s] /=  test_iteration
 
-    # Svuota la cartella "tabelle"
+    # svuoto le cartelle dei grafici
     svuota_cartella("tabelle")
-
-    # Svuota la cartella "immagini"
     svuota_cartella("immagini")
 
-    # Grafici test inserimento
+    # creo i grafici
     print("Creo i grafici")
 
 
 
     # Grafico inserimento albero binario
     plt.clf()
-    plt.plot(result, abr_insert_times, color='green', label='Inserimento albero binario di ricerca')
+    plt.plot(arrx, abr_insert_times, color='blue', label='Inserimento albero binario di ricerca')
     plt.xlabel('Dimensione dell\'array')
     plt.ylabel('Tempo di esecuzione (ms)')
     plt.title('Tempi inserimento albero binario')
@@ -162,7 +149,7 @@ if __name__ == '__main__':
 
     # Grafico inserimento albero rosso-nero
     plt.clf()
-    plt.plot(result, arn_insert_times, color='red', label='Inserimento albero rosso-nero')
+    plt.plot(arrx, arn_insert_times, color='red', label='Inserimento albero rosso-nero')
     plt.xlabel('Dimensione dell\'array')
     plt.ylabel('Tempo di esecuzione (ms)')
     plt.title('Tempi inserimento albero rosso-nero')
@@ -172,19 +159,19 @@ if __name__ == '__main__':
 
     # Grafico inserimento albero AVL
     plt.clf()
-    plt.plot(result, avl_insert_times, color='green', label='Inserimento albero AVL')
+    plt.plot(arrx, avl_insert_times, color='green', label='Inserimento albero AVL')
     plt.xlabel('Dimensione dell\'array')
     plt.ylabel('Tempo di esecuzione (ms)')
-    plt.title('Tempi inserimento albero binario')
+    plt.title('Tempi inserimento albero AVL')
     plt.legend()
     plt.savefig('immagini/avl_ins.png')
     plt.show()
 
     # Grafico confronto tra i tre tempi di inserimento
     plt.clf()
-    plt.plot(result, arn_insert_times, color='blue', label='Inserimento albero binario di ricerca')
-    plt.plot(result, avl_insert_times, color='green', label='Inserimento albero AVL')
-    plt.plot(result, arn_insert_times, color='red', label='Inserimento albero Rosso-nero')
+    plt.plot(arrx, abr_insert_times, color='blue', label='Inserimento albero binario di ricerca')
+    plt.plot(arrx, avl_insert_times, color='green', label='Inserimento albero AVL')
+    plt.plot(arrx, arn_insert_times, color='red', label='Inserimento albero Rosso-nero')
     plt.xlabel('Dimensione dell\'array')
     plt.ylabel('Tempo di esecuzione (ms)')
     plt.title('Confronto tempi inserimento')
@@ -195,10 +182,14 @@ if __name__ == '__main__':
     # Creazione delle tabelle
 
     # Creazione delle liste dei dati per inserimento, ricerca k-esima statistica d'ordine e rank
-    data_inserimento = {'Dimensione dell\'array': result, 'Albero binario di ricerca': arn_insert_times,
-                        'Albero Rosso-nero': arn_insert_times, 'Albero AVL': avl_insert_times}
+    data_inserimento = {'Dimensione dell\'array': arrx,
+                        'Albero binario di ricerca': abr_insert_times,
+                        'Albero Rosso-nero': arn_insert_times,
+                        'Albero AVL': avl_insert_times }
     df_ins = pd.DataFrame(data_inserimento)
-    data_order_statistic = {'Dimensione dell\'array': result, 'Albero binario di ricerca': abr_order_statistic_times,
+
+    data_order_statistic = {'Dimensione dell\'array': arrx,
+                            'Albero binario di ricerca': abr_order_statistic_times,
                             'Albero Rosso-nero': arn_order_statistic_times,
                             'Albero AVL': avl_order_statistic_times}
     df_os = pd.DataFrame(data_order_statistic)
