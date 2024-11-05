@@ -45,10 +45,6 @@ class Node:
     def getcolor(self):
         return self.color
 
-    #
-    def setkey(self, value):
-        self.key = value
-
 class Arn:
     def __init__(self):
         self.Nil = Node()
@@ -138,6 +134,9 @@ class Arn:
         else:
             previus.right = nuovo
         nuovo.color = Color.Red
+        if nuovo.parent == None:
+            nuovo.color = Color.Black
+            return
         self.insertfixup(nuovo)
 
     def insertfixup(self,z):

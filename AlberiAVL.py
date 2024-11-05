@@ -1,16 +1,17 @@
-class Avl:
-    def __init__(self, key=None, parent=None):
+class Node:
+    def __init__(self, key=0, parent=None, root = None):
         self.key = key
-        self.parent = parent
         self.height = 1
-        if not parent:  # se non ha un padre e non è stata impostata una radice è la radice
-            self.root = self
-        else:  # altrimenti la radice è la radice del padre
-            self.root = parent.root
-        # imposta un nodo vuoto che ha la radice impostata
         self.left = None
         self.right = None
+        self.parent = parent
+        if root is None:
+            if not parent:  # se non ha un padre
+                self.root = self
+            else:  # altrimenti la radice è la radice del padre
+                self.root = parent.root
 
+    # check fun
     def isempty(self):
         return self.key is None
 
@@ -23,97 +24,118 @@ class Avl:
     def isleaf(self):
         return self.left is None and self.right is None
 
-        # commentato in alberirossonero
-    def leftrotate(self):
-        y = self.right
-        self.right = y.left
-        # # aggiorno l'altezza di X
-        rheight = 0
-        lheight = 0
-        if self.right is not None:
-            rheight = self.right.height
-        if self.left is not None:
-            lheight = self.left.height
-        self.height = 1 + max(rheight, lheight)
-        # codice ugale a quello di alberirossoneri
-        if y.left is not None:
-             y.left.parent = self
-        y.parent = self.parent
-        if self.isroot():
-            self.root = y
-        elif self == self.parent.left:
-            self.parent.left = y
-        else:
-            self.parent.right = y
-        y.left = self
-        # aggiorno l'altezza di Y
-        y.height = self.height
-        rheight = 0
-        lheight = 0
-        if y.right is not None:
-            rheight = y.right.height
-        if y.left is not None:
-            lheight = y.left.height
-        y.height = 1 + max(rheight, lheight)
-        self.parent = y
-            # aggiorno la dimensione
+    #getter fun
+    def getkey(self):
+        return self.key
 
-    def rightrotate(self):
-        y = self.left
-        self.left = y.right
+    def getfather(self):
+        return self.parent
+
+
+class Avl:
+    def __init__(self):
+        self.left = None
+        self.right = None
+        self.Nil = Node()
+        self.Nil.left = None
+        self.Nil.right = None
+        self.Nil.height = 0
+        self.root = self.Nil
+
+    def leftrotate(self, node):
+        y = node.right
+        node.right = y.left
+        # # aggiorno l'altezza di X
+        rheight = node.right.height
+        lheight = node.left.height
+        #if self.right is not None:
+            #rheight = self.right.height
+        #if self.left is not None:
+            #lheight = self.left.height
+        node.height = 1 + max(rheight, lheight)
+        if y.left != self.Nil:
+            y.left.parent = node
+        y.parent = node.parent
+        if node.isroot():
+            node.root = y
+        elif node == node.parent.left:
+            node.parent.left = y
+        else:
+            node.parent.right = y
+        y.left = node
+
+        rheight = y.right.height
+        lheight = y.left.height
+        #if y.right is not None:
+         #   rheight = y.right.height
+        #if y.left is not None:
+         #   lheight = y.left.height
+        y.height = 1 + max(rheight, lheight)
+
+        node.parent = y
+
+
+        # aggiorno la dimensione
+
+    def rightrotate(self, node):
+        y = node.left
+        node.left = y.right
         rheight = 0
         lheight = 0
         if self.right is not None:
             rheight = self.right.height
         if self.left is not None:
             lheight = self.left.height
-        self.height = 1 + max(rheight, lheight)
-        if y.right is not None:
-            y.right.parent = self
-        y.parent = self.parent
-        if self.isroot():
-            self.root = y
-        elif self == self.parent.right:
-            self.parent.right = y
+        node.height = 1 + max(rheight, lheight)
+        if y.right != self.Nil:
+            y.right.parent = node
+        y.parent = node.parent
+        if node.isroot():
+            node.root = y
+        elif node == node.parent.right:
+            node.parent.right = y
         else:
-            self.parent.left = y
-        y.right = self
-        y.height = self.height
+            node.parent.left = y
+        y.right = node
+        node.parent = y
+        y.height = node.height
         rheight = 0
         lheight = 0
         if y.right is not None:
             rheight = y.right.height
         if y.left is not None:
-            lheight = y.left.height
+           lheight = y.left.height
         y.height = 1 + max(rheight, lheight)
-        self.parent = y
 
 
     def insert(self,value):
         current = self.root
         prev = None
-        while current and current.notempty():
+        nuovo = Node(value, parent=prev, root=self.root)
+        nuovo.parent = None
+        nuovo.key = value
+        nuovo.left = self.Nil
+        nuovo.right = self.Nil
+
+        while current != self.Nil:
             prev = current
             if value < current.key:
                 current = current.left
             else:
                 current = current.right
-        newnode = Avl(value, parent=prev)
-        if prev is None:
-            self.root = newnode
-        elif value < prev.key:
-            prev.left = newnode
-        else:
-            prev.right = newnode
-        newnode.left = Avl(parent=newnode)
-        newnode.right = Avl(parent=newnode)
-        newnode.height = 1
-        self.insertfixup(newnode)
 
+        if prev is None:
+            self.root = nuovo
+        elif value < prev.key:
+            prev.left = nuovo
+        else:
+            prev.right = nuovo
+        nuovo.height = 1
+        self.insertfixup(nuovo)
 
     def insertfixup(self, x):
         x = x.parent
-        while x is not None:
+        while x is not None and x != self.Nil:
             rheight = 0
             lheight = 0
             if x.right is not None: # per evitare errori se z.right o z.left sono None e non hanno l'attributo height
@@ -136,23 +158,32 @@ class Avl:
             x = x.parent
 
     def inorder(self):
+        current = self.root
         # controllo se il nodo è vuoto
-        if self.isempty():
+        if current.isempty():
             return []  # termino e restituisco
         # esploro a sinistra fino a che non trovo un nodo vuoto
         else:
-            left_inorder = self.left.inorder() if self.left is not None else []
-            right_inorder = self.right.inorder() if self.right is not None else []
-            return left_inorder + [self.key] + right_inorder
+            left_inorder = current.left.inorder() if current.left is not None else []
+            right_inorder = current.right.inorder() if current.right is not None else []
+            return left_inorder + [current.key] + right_inorder
 
     def search(self, value):
         current = self.root
-        while current is not None and current.key != value:
-            if value < current.key:
-                current = current.left
-            else:
-                current = current.right
-        return current
+        # controllo se il nodo è vuoto
+        if current.isempty():
+            print("{} non è presente nell'albero".format(value))
+            return False
+        # controllo se il valore è uguale al nodo attuale
+        if current.key == value:
+            print("{} è stato trovato".format(value))
+            return current
+        # controllo se il valore è minore del nodo attuale
+        elif value < current.key:
+            return current.left.search(value)
+        # controllo se il valore è maggiore del nodo attuale
+        else:
+            return current.right.search(value)
 
     def min(self):
         current = self.root
