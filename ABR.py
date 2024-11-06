@@ -1,57 +1,40 @@
-class Abr:
-    # costruttore
-    def __init__(self, key=None, parent=None):
-        # imposto il valore del nodo o crea un nodo vuoto
+class Node:
+    def __init__(self, key):
         self.key = key
-        self.parent = parent
-        # imposta la radice
-        if not parent: # se non ha un padre è la radice
-            self.root = self
-        else: # altrimenti la radice è la radice del padre
-            self.root = parent.root
-        # se non è vuoto imposto i figli come nodi vuoti
         self.left = None
         self.right = None
+        self.parent = None
 
-    # check
+    # check fun
     def isempty(self):
         return self.key is None
-
-    def isroot(self):
-        if self.root == self:
-            return True
-        else:
-            return False
 
     def notempty(self):
         return self.key is not None
 
-    # printparent
+    def isroot(self):
+        return self.parent is None
+
+    def isleaf(self):
+        return self.left is None and self.right is None
+
+    #getter fun
+    def getkey(self):
+        return self.key
+
+    def getfather(self):
+        return self.parent
+
+    # node fun
+
+    # printparent node
     def printparent(self):
         if self.parent:
             print("Il nodo padre di {} è {}".format(self.key, self.parent.key))
         else:
             print("Questo nodo non ha un padre (è la radice)")
 
-    # inserisci valore
-    def insert(self, value):
-        # controllo se è il nodo root o se il nodo attuale è vuoto
-        if self.isempty():
-            self.key = value
-            # imposto i figli come nodi vuoti
-            self.right = Abr(parent=self)
-            self.left = Abr(parent=self)
-            # print("il valore: {} è stato inserito con successo".format(self.key))
-        else:
-            # controllo se il valore da inserire è < del nodo attuale
-            if value < self.key:
-                # è piu piccolo, inserisco a sinistra
-                self.left.insert(value)
-            else:
-                # è più grande o uguale, inserisco a destra
-                self.right.insert(value)
-
-    # Attraversamento dell'albero
+    # attraversamento del sottoalbero
     def inorder(self):
         # controllo se il nodo è vuoto
         if self.isempty():
@@ -60,25 +43,24 @@ class Abr:
         else:
             return self.left.inorder() + [self.key] + self.right.inorder()
 
-    # ricerca
+    # ricerca nel sottoalbero
     def search(self, value):
-        current = self.root
         # controllo se il nodo è vuoto
-        if current.isempty():
+        if self.isempty():
             # print("{} non è presente nell'albero".format(value))
             return False
         # controllo se il valore è uguale al nodo attuale
-        if current.key == value:
+        if self.key == value:
             # print("{} è stato trovato".format(value))
             return True
         # controllo se il valore è minore del nodo attuale
-        elif value < current.key:
-            return current.left.search(value)
+        elif value < self.key:
+            return self.left.search(value)
         # controllo se il valore è maggiore del nodo attuale
         else:
-            return current.right.search(value)
+            return self.right.search(value)
 
-    # print del minimo
+    # minimo del sottoalbero
     def minprint(self):
         current = self
         # controllo se il nodo a sinistra è vuoto
@@ -102,14 +84,6 @@ class Abr:
             current = current.left
         return current
 
-    # il minimo dell'albero
-    def minroot(self):
-        x = self.root
-        # controllo se il nodo a sinistra è vuoto
-        while not x.left.isempty():
-            x = x.left
-        return x
-
     # successor
     def successor(self):
         if self.right.isempty():
@@ -119,16 +93,31 @@ class Abr:
             next = next.left
         return next
 
-    # trasplant
-    def trasplant(self, u, v):
-        if u.parent is None:
-            self.root = v
-        elif u == u.parent.left:
-            u.parent.left = v
-        else:
-            u.parent.right = v
-        if  v.notempty():
-            v.parent = u.parent
+class Abr:
+    # costruttore
+    def __init__(self):
+        self.root = None
+
+    def insert(self, val):
+        # set up
+        current = self.root # parto dalla radice
+        predecessor = None # inizia vuoto
+        newnode = Node(val)
+        # trova la posizione in cui posizionarlo
+        while current is not None:
+            predecessor = current
+            if newnode.key < current.key:
+                current = current.left
+            else:
+                current = current.right
+        # imposta il padre
+        newnode.parent = predecessor
+        if predecessor is None: # caso radice
+            self.root = newnode
+        elif newnode.key < predecessor.key: # figlio sinistro
+            predecessor.left = newnode
+        else: # figlio destro
+            predecessor.right = newnode
 
     # ritorna il k-esimo elemento più piccolo
     def kesimo(self, k):
@@ -137,7 +126,7 @@ class Abr:
         count = 0
         while True:
             # scendo a sinistra fino a trovare un nodo vuoto e metto i nodi visitati nello stack
-            if current.left is not None:
+            if current is not None:
                 stack.append(current)
                 current = current.left
             # prendo il nodo in cima allo stack e lo visito
@@ -170,9 +159,30 @@ class Abr:
         # print("la dimensione dell'albero è: {}".format(size))
         return size
 
-    # indica l'altezza del sottoalbero
-    def height(self):
-        if (self.key is None):
-            return 0
-        else:
-            return 1 + max(self.left.height(), self.right.height())
+        # attraversaento
+
+    def treetraversal(self):
+        cur = self.root
+        cur.inorder()
+
+        # ricerca
+
+    def treesearch(self, value):
+        cur = self.root
+        cur.search(value)
+
+        # print del minimo
+
+    def treeminprint(self):
+        cur = self.root
+        cur.minprint()
+
+    def treemaxprint(self):
+        cur = self.root
+        cur.maxprint()
+
+        # minimo
+
+    def treemin(self):
+        cur = self.root
+        cur.min()

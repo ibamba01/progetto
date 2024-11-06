@@ -10,7 +10,7 @@ from AlberiRossoNeri import Arn
 from AlberiAVL import Avl
 
 n = 2505
-step = 50
+step = 100
 test_iteration = 5
 
 # funzione per creare un array random
@@ -178,6 +178,50 @@ if __name__ == '__main__':
     plt.legend()
     plt.savefig('immagini/conf_ins.png')
     plt.show()
+
+    # Grafico inserimento albero binario
+    plt.clf()
+    plt.plot(arrx, abr_order_statistic_times, color='blue', label='k esimo albero binario di ricerca')
+    plt.xlabel('Dimensione dell\'array')
+    plt.ylabel('Tempo di esecuzione (ms)')
+    plt.title('Tempi k esimo albero binario')
+    plt.legend()
+    plt.savefig('immagini/abr_ins.png')
+    plt.show()
+
+    # Grafico inserimento albero rosso-nero
+    plt.clf()
+    plt.plot(arrx, arn_order_statistic_times, color='red', label='k esimo albero rosso-nero')
+    plt.xlabel('Dimensione dell\'array')
+    plt.ylabel('Tempo di esecuzione (ms)')
+    plt.title('Tempi k esimo albero rosso-nero')
+    plt.legend()
+    plt.savefig('immagini/rbt_ins.png')
+    plt.show()
+
+    # Grafico inserimento albero AVL
+    plt.clf()
+    plt.plot(arrx, avl_order_statistic_times, color='green', label='k esimo albero AVL')
+    plt.xlabel('Dimensione dell\'array')
+    plt.ylabel('Tempo di esecuzione (ms)')
+    plt.title('Tempi K esimo albero AVL')
+    plt.legend()
+    plt.savefig('immagini/avl_ins.png')
+    plt.show()
+
+    # Grafico confronto tra i tre tempi di inserimento
+    plt.clf()
+    plt.plot(arrx, abr_order_statistic_times, color='blue', label='k esimo albero binario di ricerca')
+    plt.plot(arrx, avl_order_statistic_times, color='green', label='k esimo albero AVL')
+    plt.plot(arrx, arn_order_statistic_times, color='red', label='k esimo albero Rosso-nero')
+    plt.xlabel('Dimensione dell\'array')
+    plt.ylabel('Tempo di esecuzione (ms)')
+    plt.title('Confronto tempi K esimo')
+    plt.legend()
+    plt.savefig('immagini/conf_ins.png')
+    plt.show()
+
+
 
     # Creazione delle tabelle
 
