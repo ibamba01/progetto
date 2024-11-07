@@ -167,7 +167,7 @@ class Abr:
 
         # ricerca
 
-    def treesearch(self, value):
+    def search(self, value):
         cur = self.root
         cur.search(value)
 

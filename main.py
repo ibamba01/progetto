@@ -9,8 +9,8 @@ from ABR import Abr
 from AlberiRossoNeri import Arn
 from AlberiAVL import Avl
 
-n = 2505
-step = 100
+n = 8005
+step = 50
 test_iteration = 5
 
 # funzione per creare un array random
@@ -20,6 +20,8 @@ def random_array(num):
         array.append(j)
     random.shuffle(array)
     return array
+def arraylist(num):
+    return list(range(num))
 
 # test per la misurazione dei tempi di inserimento
 def test_insert_mesure(insert_fun, array):
@@ -41,15 +43,23 @@ def test_os_mesure(os_function, length):
     t = timeit.timeit(stmt=lambda: os_function(k), number=test_iteration)
     return (t / test_iteration) * 1000  # tempo in ms
 
+def test_search_mesure(search_fun, length):
+    k = random.randint(0, length - 1)
+    t = timeit.timeit(stmt=lambda: search_fun(k), number=test_iteration)
+    return (t / test_iteration) * 1000
 
 def test(num, stepp):
     abr_insert = []
-    abr_kesimo = []
+    avl_insert = []
     arn_insert = []
 
     arn_kesimo = []
-    avl_insert = []
+    abr_kesimo = []
     avl_kesimo = []
+
+    abr_search = []
+    arn_search = []
+    avl_search = []
     # inizializzo gli alberi
     abr = Abr()
     arn = Arn()
@@ -57,6 +67,7 @@ def test(num, stepp):
 
     # test
     for i in range(5, num, stepp):
+        print("test con array di dim:", i)
         # i è il numero di elementi presenti nell'array
         arr = random_array(i)
 
@@ -70,15 +81,19 @@ def test(num, stepp):
         arn_kesimo.append(test_os_mesure(arn.kesimo, i)) # risolto
         avl_kesimo.append(test_os_mesure(avl.kesimo, i)) # risolto
 
-    return abr_insert, abr_kesimo, arn_insert, arn_kesimo, avl_insert, avl_kesimo
+        abr_search.append(test_search_mesure(abr.search, i))
+        arn_search.append(test_search_mesure(arn.search, i))
+        avl_search.append(test_search_mesure(avl.search, i))
+
+    return abr_insert, abr_kesimo, arn_insert, arn_kesimo, avl_insert, avl_kesimo, abr_search, arn_search, avl_search
 
 # Funzione per svuotare una cartella
-def svuota_cartella(cartella):
-    file_lista = os.listdir(cartella)
-    for file in file_lista:
-        file_path = os.path.join(cartella, file)
-        os.remove(file_path)
 
+def svuota_cartella(cartella):
+    for root, dirs, files in os.walk(cartella):
+        for file in files:
+            file_path = os.path.join(root, file)
+            os.remove(file_path)  # Elimina il file
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print("Set up")
@@ -94,13 +109,16 @@ if __name__ == '__main__':
     abr_order_statistic_times = [0.0] * len(arrx)
     arn_order_statistic_times = [0.0] * len(arrx)
     avl_order_statistic_times = [0.0] * len(arrx)
+    abr_search_times = [0.0] * len(arrx)
+    arn_search_times = [0.0] * len(arrx)
+    avl_search_times = [0.0] * len(arrx)
 
     print("Inizio i test")
 
     for j in range(test_iteration):
         print("Test numero: ", (j+1), " di ", test_iteration)
 
-        abr_temp_insert, abr_temp_os, arn_temp_insert, arn_temp_os, avl_temp_insert, avl_temp_os = test(n, step)
+        abr_temp_insert, abr_temp_os, arn_temp_insert, arn_temp_os, avl_temp_insert, avl_temp_os, abr_temp_search, arn_temp_search, avl_temp_search = test(n, step)
 
         for k in range(len(arrx)):
             print("riempio gli array ","[",(k+1), " di ", len(abr_temp_insert),"]")
@@ -114,6 +132,10 @@ if __name__ == '__main__':
             arn_order_statistic_times[k] += arn_temp_os[k]
             avl_order_statistic_times[k] += avl_temp_os[k]
 
+            abr_search_times[k] += abr_temp_search[k]
+            arn_search_times[k] += arn_temp_search[k]
+            avl_search_times[k] += avl_temp_search[k]
+
     print("faccio la media")
     # Calcolo la media
     for s in range(0, len(arrx)):
@@ -126,6 +148,11 @@ if __name__ == '__main__':
         abr_order_statistic_times[s] /=  test_iteration
         arn_order_statistic_times[s] /=  test_iteration
         avl_order_statistic_times[s] /=  test_iteration
+
+        # Ricerca
+        abr_search_times[s] /= test_iteration
+        arn_search_times[s] /= test_iteration
+        avl_search_times[s] /= test_iteration
 
     # svuoto le cartelle dei grafici
     svuota_cartella("tabelle")
@@ -143,7 +170,7 @@ if __name__ == '__main__':
     plt.ylabel('Tempo di esecuzione (ms)')
     plt.title('Tempi inserimento albero binario')
     plt.legend()
-    plt.savefig('immagini/abr_ins.png')
+    plt.savefig('immagini/insert/abr_ins.png')
     plt.show()
 
 
@@ -154,7 +181,7 @@ if __name__ == '__main__':
     plt.ylabel('Tempo di esecuzione (ms)')
     plt.title('Tempi inserimento albero rosso-nero')
     plt.legend()
-    plt.savefig('immagini/rbt_ins.png')
+    plt.savefig('immagini/insert/rbt_ins.png')
     plt.show()
 
     # Grafico inserimento albero AVL
@@ -164,7 +191,7 @@ if __name__ == '__main__':
     plt.ylabel('Tempo di esecuzione (ms)')
     plt.title('Tempi inserimento albero AVL')
     plt.legend()
-    plt.savefig('immagini/avl_ins.png')
+    plt.savefig('immagini/insert/avl_ins.png')
     plt.show()
 
     # Grafico confronto tra i tre tempi di inserimento
@@ -176,49 +203,91 @@ if __name__ == '__main__':
     plt.ylabel('Tempo di esecuzione (ms)')
     plt.title('Confronto tempi inserimento')
     plt.legend()
-    plt.savefig('immagini/conf_ins.png')
+    plt.savefig('immagini/insert/conf_ins.png')
     plt.show()
 
-    # Grafico inserimento albero binario
+    # Grafico ricerca k-esimo elemento più piccolo, Albero binario
     plt.clf()
     plt.plot(arrx, abr_order_statistic_times, color='blue', label='k esimo albero binario di ricerca')
     plt.xlabel('Dimensione dell\'array')
     plt.ylabel('Tempo di esecuzione (ms)')
-    plt.title('Tempi k esimo albero binario')
+    plt.title('Tempi di ricerca del k-esimo elemento più piccolo, albero binario')
     plt.legend()
-    plt.savefig('immagini/abr_ins.png')
+    plt.savefig('immagini/order/abr_k.png')
     plt.show()
 
-    # Grafico inserimento albero rosso-nero
+    # Grafico ricerca k-esimo elemento più piccolo, Albero rosso-nero
     plt.clf()
     plt.plot(arrx, arn_order_statistic_times, color='red', label='k esimo albero rosso-nero')
     plt.xlabel('Dimensione dell\'array')
     plt.ylabel('Tempo di esecuzione (ms)')
-    plt.title('Tempi k esimo albero rosso-nero')
+    plt.title('Tempi di ricerca del k-esimo elemento più piccolo, albero rosso-nero')
     plt.legend()
-    plt.savefig('immagini/rbt_ins.png')
+    plt.savefig('immagini/order/rbt_k.png')
     plt.show()
 
-    # Grafico inserimento albero AVL
+    # Grafico ricerca k-esimo elemento più piccolo, albero AVL
     plt.clf()
     plt.plot(arrx, avl_order_statistic_times, color='green', label='k esimo albero AVL')
     plt.xlabel('Dimensione dell\'array')
     plt.ylabel('Tempo di esecuzione (ms)')
-    plt.title('Tempi K esimo albero AVL')
+    plt.title('Tempi di ricerca del k-esimo elemento più piccolo, albero AVL')
     plt.legend()
-    plt.savefig('immagini/avl_ins.png')
+    plt.savefig('immagini/order/avl_k.png')
     plt.show()
 
-    # Grafico confronto tra i tre tempi di inserimento
+    # Grafico confronto tra i tre tempi di ricerca k-esimo elemento più piccolo,
     plt.clf()
-    plt.plot(arrx, abr_order_statistic_times, color='blue', label='k esimo albero binario di ricerca')
-    plt.plot(arrx, avl_order_statistic_times, color='green', label='k esimo albero AVL')
-    plt.plot(arrx, arn_order_statistic_times, color='red', label='k esimo albero Rosso-nero')
+    plt.plot(arrx, abr_order_statistic_times, color='blue', label='k-esimo albero binario di ricerca')
+    plt.plot(arrx, avl_order_statistic_times, color='green', label='k-esimo albero AVL')
+    plt.plot(arrx, arn_order_statistic_times, color='red', label='k-esimo albero Rosso-nero')
     plt.xlabel('Dimensione dell\'array')
     plt.ylabel('Tempo di esecuzione (ms)')
-    plt.title('Confronto tempi K esimo')
+    plt.title('Confronto tempi di ricerca del k-esimo elemento più piccolo')
     plt.legend()
-    plt.savefig('immagini/conf_ins.png')
+    plt.savefig('immagini/order/conf_k.png')
+    plt.show()
+
+    # Grafico ricerca elemento, Albero binario
+    plt.clf()
+    plt.plot(arrx, abr_search_times, color='blue', label='k esimo albero binario di ricerca')
+    plt.xlabel('Dimensione dell\'array')
+    plt.ylabel('Tempo di esecuzione (ms)')
+    plt.title('Tempi di ricerca di un elemento, albero binario')
+    plt.legend()
+    plt.savefig('immagini/search/abr_search.png')
+    plt.show()
+
+    # Grafico ricerca elemento, Albero rosso-nero
+    plt.clf()
+    plt.plot(arrx, arn_search_times, color='red', label='k esimo albero rosso-nero')
+    plt.xlabel('Dimensione dell\'array')
+    plt.ylabel('Tempo di esecuzione (ms)')
+    plt.title('Tempi di ricerca di un elemento, albero rosso-nero')
+    plt.legend()
+    plt.savefig('immagini/search/rbt_search.png')
+    plt.show()
+
+    # Grafico ricerca elemento, Albero AVL
+    plt.clf()
+    plt.plot(arrx, avl_search_times, color='green', label='k esimo albero AVL')
+    plt.xlabel('Dimensione dell\'array')
+    plt.ylabel('Tempo di esecuzione (ms)')
+    plt.title('Tempi di ricerca di un elemento, albero AVL')
+    plt.legend()
+    plt.savefig('immagini/search/avl_search.png')
+    plt.show()
+
+    # Grafico confronto tra i tre tempi di ricerca k-esimo elemento più piccolo,
+    plt.clf()
+    plt.plot(arrx, abr_search_times, color='blue', label='k-esimo albero binario di ricerca')
+    plt.plot(arrx, avl_search_times, color='green', label='k-esimo albero AVL')
+    plt.plot(arrx, arn_search_times, color='red', label='k-esimo albero Rosso-nero')
+    plt.xlabel('Dimensione dell\'array')
+    plt.ylabel('Tempo di esecuzione (ms)')
+    plt.title('Confronto tempi di ricerca di un elemento')
+    plt.legend()
+    plt.savefig('immagini/search/conf_search.png')
     plt.show()
 
 

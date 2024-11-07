@@ -3,18 +3,14 @@ class Color:
     Red = "red"
 # nodo di un albero
 class Node:
-    def __init__(self, key=0, parent=None, root = None):
-        #self.size = 1
+    def __init__(self, key, size=1, color=None):
         self.key = key
+        self.size = size # dimensione del sottoalbero
         self.left = None
         self.right = None
-        self.parent = parent
-        self.color = Color.Black
-        if root is None:
-            if not parent:  # se non ha un padre
-                self.root = self
-            else:  # altrimenti la radice è la radice del padre
-                self.root = parent.root
+        self.parent = None
+        self.color = color  # colore del nodo
+
 
     # check fun
     def isempty(self):
@@ -47,47 +43,35 @@ class Node:
 
 class Arn:
     def __init__(self):
-        self.Nil = Node()
-        self.Nil.color = Color.Black
-        self.Nil.left = None
-        self.Nil.right = None
-        self.root = self.Nil
+        nil = Node(None, 0, Color.Black)
+        self.Nil = nil
+        self.root = nil
 
-
-    # suppongo self.right non sia vuoto
     def leftrotate(self, node):
         # imposto y come figlio destro
         y = node.right
-        # sposto il sottoalbero sinistro di y nel sottoalbero destro di self
+        # sposto il sottoalbero di sinistra di y a destra di node (dove prima era y)
         node.right = y.left
-        # collego il padre di self a y
-        if y.left != self.Nil: # il nodo esiste ma è vuoto, pertanto avrebbe y.left is None vero
-            # aggiorno il parent del nodo a sinistra di y con self
+        # controllo se y avesse figli
+        if y.left != self.Nil:
             y.left.parent = node
-        # faccio lo switch tra y e x
+        # switch dei parent
         y.parent = node.parent
-        # se self è la radice
-        if node.isroot():
-            node.root = y
-        # se self è il figlio sinistro
+        # check se è la radice
+        if node.parent == self.Nil:
+            self.root = y
+        # check se è il figlio sinistro
         elif node == node.parent.left:
-            # imposto y come figlio sinistro
             node.parent.left = y
         else:
-            # imposto y come figlio destro
             node.parent.right = y
-        # imposto x come figlio sinistro di y concludendo lo switch
+        # pongo x a sinistra
         y.left = node
+        # lo imposto come figlio
         node.parent = y
+        # aggiorno la dimensione del sottoalbero
         y.size = node.size
-        node.size = 1
-        #if node.right is not None:
-            #node.size += node.right.size
-        #if node.left is not None:
-           # node.size += node.left.size
-
-
-        # aggiorno la dimensione
+        node.size = node.left.size + node.right.size + 1
 
     def rightrotate(self, node):
         y = node.left
@@ -95,80 +79,79 @@ class Arn:
         if y.right != self.Nil:
             y.right.parent = node
         y.parent = node.parent
-        if node.isroot():
-            node.root = y
+        if node.parent == self.Nil:
+            self.root = y
         elif node == node.parent.right:
             node.parent.right = y
         else:
             node.parent.left = y
         y.right = node
         node.parent = y
-        node.size = 1
-        #if node.right is not None:
-            #node.size += node.right.size
-        #if node.left is not None:
-            #node.size += node.left.size
+        y.size = node.size
+        node.size = node.left.size + node.right.size + 1
+
 
     def insert(self,value):
         # setup
-        current = self.root
-        previus = None
-        nuovo = Node(value,parent=previus,root=self.root)
-        nuovo.parent = None
-        nuovo.key = value
-        nuovo.left = self.Nil
-        nuovo.right = self.Nil
-        nuovo.color = Color.Black
+        current = self.root # x
+        previus = self.Nil # y
+        newnode = Node(value,color=Color.Red) # z
+        size = newnode.size
         # trova la posizione
         while current != self.Nil:
             previus = current
             if value < current.key:
+                # aumento la grandezza che avrà il suo sottoalbero
+                size += 1
                 current = current.left
             else:
+                size += 1
                 current = current.right
+        newnode.parent = previus
+        newnode.size = size
         # check posizione del padre
-        if previus is None:
-            self.root = nuovo
-        elif nuovo.key < previus.key:
-            previus.left = nuovo
+        if previus == self.Nil:
+            self.root = newnode
+        elif newnode.key < previus.key:
+            previus.left = newnode
         else:
-            previus.right = nuovo
-        nuovo.color = Color.Red
-        if nuovo.parent == None:
-            nuovo.color = Color.Black
-            return
-        self.insertfixup(nuovo)
+            previus.right = newnode
+        newnode.color = Color.Red
+        newnode.right = self.Nil
+        newnode.left = self.Nil
+        self.insertfixup(newnode)
 
-    def insertfixup(self,z):
-        while z.parent is not None and z.parent.isred():
-            if z.parent == z.parent.parent.left:
-                y = z.parent.parent.right
-                if y is not None and y.isred():
-                    z.parent.color = Color.Black
+    def insertfixup(self, node):
+
+        while node.parent.color == Color.Red and node.parent != self.Nil:
+            if node.parent == node.parent.parent.left:
+                y = node.parent.parent.right
+                if y.color == Color.Red:
+                    node.parent.color = Color.Black
                     y.color = Color.Black
-                    z.parent.parent.color = Color.Red
-                    z = z.parent.parent
+                    node.parent.parent.color = Color.Red
+                    node = node.parent.parent
                 else:
-                    if z == z.parent.right:
-                        z = z.parent
-                        z.leftrotate()
-                    z.parent.color = Color.Black
-                    z.parent.parent.color = Color.Red
-                    z.parent.parent.rightrotate()
+                    if node == node.parent.right:
+                        node = node.parent
+                        self.leftrotate(node)
+                    node.parent.color = Color.Black
+                    node.parent.parent.color = Color.Red
+                    self.rightrotate(node.parent.parent)
             else:
-                y = z.parent.parent.left
-                if y is not None and y.isred():
-                    z.parent.color = Color.Black
+                y = node.parent.parent.left
+                if y.color == Color.Red:
+                    node.parent.color = Color.Black
                     y.color = Color.Black
-                    z.parent.parent.color = Color.Red
-                    z = z.parent.parent
+                    node.parent.parent.color = Color.Red
+                    node = node.parent.parent
                 else:
-                    if z == z.parent.left:
-                        z = z.parent
-                        z.rightrotate()
-                    z.parent.color = Color.Black
-                    z.parent.parent.color = Color.Red
-                    z.parent.parent.leftrotate()
+                    if node == node.parent.left:
+                        node = node.parent
+                        self.rightrotate(node)
+                    node.parent.color = Color.Black
+                    node.parent.parent.color = Color.Red
+                    self.leftrotate(node.parent.parent)
         self.root.color = Color.Black
 
     def inorder(self):
@@ -202,19 +185,15 @@ class Arn:
             else:
                 break
 
+
     def search(self, value):
         current = self.root
         # controllo se il nodo è vuoto
-        if current.isempty():
-            print("{} non è presente nell'albero".format(value))
-            return False
-        # controllo se il valore è uguale al nodo attuale
+        while current != self.Nil and current.key != value:
+            if value < current.key:
+                current = current.left
+            else:
+                current = current.right
         if current.key == value:
-            print("{} è stato trovato".format(value))
-            return current
-        # controllo se il valore è minore del nodo attuale
-        elif value < current.key:
-            return current.left.search(value)
-        # controllo se il valore è maggiore del nodo attuale
-        else:
-            return current.right.search(value)
+            return True
+        else: return False
